@@ -1,0 +1,23 @@
+services:
+  resolver-api:
+    build: .
+    image: dependency-resolver-api:latest
+    container_name: dependency-resolver-api
+    ports:
+      # Host 8000 -> container 8000
+      - "8000:8000"
+    environment:
+      RESOLVER_DB: /data/resolver.db
+      PORT: "8000"
+    volumes:
+      - resolver-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+volumes:
+  resolver-data:
